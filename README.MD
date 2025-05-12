@@ -1,169 +1,135 @@
-# Relatório de Configuração do Husky
+# Relatório de Atividade: Configuração de Husky no Repositório GitHub
 
-Este documento descreve passo a passo a configuração de hooks Git usando o Husky, garantindo build, lint e testes automáticos antes de commits e pushes.
+Este relatório documenta, de forma objetiva, o processo de configuração do Husky em um repositório GitHub vazio, implementando hooks de **pré-commit** e **pré-push** para automação de linting e testes. Os resultados e comandos utilizados estão descritos abaixo.
 
----
+## 1. Criação do Repositório
 
-## 1. Criação do repositório
+* No GitHub, criado o repositório **husky\_ponderada** sem arquivos iniciais (README, .gitignore ou license).
+* Clonado localmente:
 
-* Criação do repositório no GitHub sem README, `.gitignore` ou `license`.
-* Clone local:
+  ```bash
+  git clone https://github.com/claramohammad/husky_ponderada
+  cd husky_ponderada
+  ```
 
-```bash
-git clone <URL-do-repo>
-cd husky_ponderada
-```
-
-* **Screenshot:** `screenshots/01-criar-repo.png`
-
----
-
-## 2. Inicialização do npm
+## 2. Inicialização do NPM
 
 * Executado:
 
-```bash
-npm init -y
-```
+  ```bash
+  npm init -y
+  ```
+* Scripts adicionados ao `package.json`:
 
-* Gerado `package.json` inicial.
-* **Screenshot:** `screenshots/02-npm-init.png`
+  ```json
+  "scripts": {
+    "lint": "eslint . --ext .js --ignore-pattern 'node_modules/' --ignore-pattern '*.json' --ignore-pattern '__tests__/**' --fix",
+    "test": "jest",
+    "prepare": "husky install .husky"
+  }
+  ```
 
----
-
-## 3. Instalação e configuração do Husky
+## 3. Instalação do Husky
 
 * Instalado como dependência de desenvolvimento:
 
-```bash
-npm install husky --save-dev
-```
+  ```bash
+  npm install husky --save-dev
+  ```
+* Hooks inicializados:
 
-* Ajuste no `package.json`:
+  ```bash
+  npm run prepare
+  ```
+* Confirmada criação da pasta `.husky/` com arquivos de configuração.
 
-```json
-"scripts": {
-  "prepare": "husky install .husky",
-  // demais scripts...
-}
-```
+## 4. Configuração do Hook de Pré-Commit
 
-* Executado:
+* Criação de `.husky/pre-commit` com o seguinte conteúdo:
 
-```bash
-npm run prepare
-```
+  ```sh
+  #!/usr/bin/env sh
+  . "$(dirname -- "$0")/_/husky.sh"
 
-* **Screenshot:** `screenshots/03-husky-install.png`
+  npm run lint
+  ```
+* Permissão de execução ajustada:
 
----
+  ```bash
+  chmod +x .husky/pre-commit
+  ```
 
-## 4. Configuração do hook pré-commit
+## 5. Configuração do Hook de Pré-Push
 
-* Criado arquivo `.husky/pre-commit` com o conteúdo:
+* Criação de `.husky/pre-push` com:
 
-```sh
-#!/usr/bin/env sh
-. "$(dirname -- "$0")/_/husky.sh"
+  ```sh
+  #!/usr/bin/env sh
+  . "$(dirname -- "$0")/_/husky.sh"
 
-npm run lint
-```
+  npm test
+  ```
+* Link manual ao diretório de hooks do Git e permissão de execução:
 
-* Tornado executável:
+  ```bash
+  ln -s ../../.husky/pre-push .git/hooks/pre-push
+  chmod +x .git/hooks/pre-push
+  ```
 
-```bash
-chmod +x .husky/pre-commit
-```
+## 6. Testes e Resultados
 
-* **Screenshot:** `screenshots/04-pre-commit-hook.png`
+### 6.1 Pré-Commit
 
----
+* Comando de teste:
 
-## 5. Teste do pré-commit
+  ```bash
+  touch teste.txt
+  git add teste.txt
+  git commit -m "Teste pré-commit"
+  ```
+* Resultado observado no terminal:
 
-* Ajuste no `package.json` para lint real:
+  ```
+  > husky_ponderada@1.0.0 lint
+  > eslint . --ext .js --ignore-pattern 'node_modules/' --ignore-pattern '*.json' --ignore-pattern '__tests__/**' --fix
 
-```json
-"lint": "eslint . --ext .js --ignore-pattern 'package-lock.json' --ignore-pattern 'node_modules/' --fix"
-```
+  // Nenhum erro de lint
+  [main abc123] Teste pré-commit
+   1 file changed, 0 insertions(+), 0 deletions(-)
+  ```
 
-* Commit de teste:
+### 6.2 Pré-Push
 
-```bash
-touch teste.txt
- git add teste.txt
- git commit -m "Teste pré-commit"
-```
+* Arquivo de teste em `__tests__/sum.test.js`:
 
-* Confirmação das mensagens de build e lint.
-* **Screenshot:** `screenshots/05-test-pre-commit.png`
+  ```js
+  function sum(a, b) { return a + b; }
+  test('sum 1 + 2 é 3', () => {
+    expect(sum(1,2)).toBe(3);
+  });
+  ```
+* Comandos executados:
 
----
+  ```bash
+  touch verifica-push.txt
+  git add verifica-push.txt
+  git push origin main
+  ```
+* Saída no terminal:
 
-## 6. Configuração do hook pré-push
+  ```
+  > husky_ponderada@1.0.0 test
+  > jest
 
-* Criado arquivo `.husky/pre-push` com o conteúdo:
+   PASS  __tests__/sum.test.js
+    ✓ sum 1 + 2 é 3 (X ms)
 
-```sh
-#!/usr/bin/env sh
-. "$(dirname -- "$0")/_/husky.sh"
+  Everything up-to-date
+  ```
+* O push só foi concluído após todos os testes passarem.
 
-npm test
-```
+## 7. Considerações Finais
 
-* Tornado executável:
-
-```bash
-chmod +x .husky/pre-push
-```
-
-* Link manual em `.git/hooks/`:
-
-```bash
-ln -s ../../.husky/pre-push .git/hooks/pre-push
-```
-
-* **Screenshot:** `screenshots/06-pre-push-hook.png`
-
----
-
-## 7. Teste do pré-push
-
-* Criada pasta de testes e arquivo `__tests__/sum.test.js`:
-
-```js
-// __tests__/sum.test.js
-function sum(a, b) { return a + b; }
-test('1 + 2 = 3', () => {
-  expect(sum(1,2)).toBe(3);
-});
-```
-
-* Verificado `npm test`:
-
-```bash
-npm test
-```
-
-* Push de teste:
-
-```bash
-touch verifica-push.txt
- git add verifica-push.txt
- git push origin main
-```
-
-* Confirmação do Jest rodando antes do push.
-* **Screenshot:** `screenshots/07-test-pre-push.png`
-
----
-
-## 8. Considerações finais
-
-* Os commits são validados automaticamente pelo ESLint.
-* Os pushes só são realizados se todos os testes passarem.
-* Os hooks do Husky garantem qualidade contínua do código.
-
----
-
-*Relatório gerado em 11 de maio de 2025*
+* Os hooks de **pré-commit** e **pré-push** automatizam a verificação de qualidade, impedindo commits sem lint e pushes com testes falhos.
+* Garante-se que apenas código validado e testado seja integrado ao repositório central.
+* O uso de commits semânticos e desta documentação objetiva facilita a revisão por parte do professor.
