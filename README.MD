@@ -89,14 +89,7 @@ Este relatório documenta, de forma objetiva, o processo de configuração do Hu
   ```
 * Resultado observado no terminal:
 
-  ```
-  > husky_ponderada@1.0.0 lint
-  > eslint . --ext .js --ignore-pattern 'node_modules/' --ignore-pattern '*.json' --ignore-pattern '__tests__/**' --fix
-
-  // Nenhum erro de lint
-  [main abc123] Teste pré-commit
-   1 file changed, 0 insertions(+), 0 deletions(-)
-  ```
+  ![Pré-commit rodando lint e criando commit](screenshots/pre-commit.png)
 
 ### 6.2 Pré-Push
 
@@ -117,15 +110,8 @@ Este relatório documenta, de forma objetiva, o processo de configuração do Hu
   ```
 * Saída no terminal:
 
-  ```
-  > husky_ponderada@1.0.0 test
-  > jest
+![07 – Pré-push rodando Jest antes do envio](screenshots/pre-push.png)
 
-   PASS  __tests__/sum.test.js
-    ✓ sum 1 + 2 é 3 (X ms)
-
-  Everything up-to-date
-  ```
 * O push só foi concluído após todos os testes passarem.
 
 ## 7. Considerações Finais
