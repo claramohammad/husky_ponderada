@@ -89,7 +89,7 @@ Este relatório documenta, de forma objetiva, o processo de configuração do Hu
   ```
 * Resultado observado no terminal:
 
-  ![Pré-commit rodando lint e criando commit](screenshots/pre-commit.png)
+  ![Pré-commit rodando lint e criando commit](/screenshots/pre-commit.png)
 
 ### 6.2 Pré-Push
 
@@ -110,8 +110,7 @@ Este relatório documenta, de forma objetiva, o processo de configuração do Hu
   ```
 * Saída no terminal:
 
-![07 – Pré-push rodando Jest antes do envio](screenshots/pre-push.png)
-
+![07 – Pré-push rodando Jest antes do envio](/screenshots/pre-push.png)
 * O push só foi concluído após todos os testes passarem.
 
 ## 7. Considerações Finais
