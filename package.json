@@ -5,7 +5,7 @@
   "test": "jest",
   "scripts": {
     "build": "echo \"⚙️  Sem etapa de build (JS puro)\"",
-    "lint": "eslint . --ext .js --ignore-pattern 'package-lock.json' --ignore-pattern 'node_modules/' --fix",
+    "lint": "eslint . --ext .js --ignore-pattern 'node_modules/' --ignore-pattern '*.json' --ignore-pattern '__tests__/**' --fix",
     "test": "jest",
     "prepare": "husky install .husky"
   },
